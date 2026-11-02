@@ -12,31 +12,20 @@ monster, print a welcome message, and print a formatted shop menu'''
 #imports random module
 import random
 
-#function purchase_item takes three perameters
-#calculates values for number of purchasable items and leftover money
-def purchase_item(itemPrice, startingMoney, quantityToPurchase = 1):
+#function print_welcome takes two perameters
+#prints called name centered across called width
+def print_welcome(name, width):
     '''
-    Calculates leftover money and number of purchaseable items.
+    Prints name given in function call centered across given widths
 
     Parameters: 
-        itemPrice: The amount of money the item costs
-        startingMoney: The amount of money the user starts with
-        quantityToPurchase: The amount of items available to buy
+        name: The name that should be displayed
+        width: The width you want the name centered in 
 
     Returns:
-        num_purchased: The amount of items the user can purchase
-        leftover_money: The amount of money left over after purchasing
+        None
     '''
-    num_purchased = startingMoney // itemPrice
-    if num_purchased <= quantityToPurchase:
-        spent_money = num_purchased * itemPrice
-        leftover_money = startingMoney - spent_money
-        return num_purchased, leftover_money
-    else:
-        num_purchased = quantityToPurchase
-        spent_money = num_purchased * itemPrice
-        leftover_money = startingMoney - spent_money
-        return num_purchased, leftover_money
+    print(f"{name:^{width}}")
         
 #function new_random_monster takes zero perameters
 #randomly selects monster and assigns variables based on monster
@@ -79,71 +68,129 @@ def new_random_monster():
     return {"name": name, "description": description, "health": health,
     "power": power, "money": money}
 
-#function print_welcome takes two perameters
-#prints called name centered across called width
-def print_welcome(name, width):
+#function town_menu takes two perameters
+#prints users current location
+#prints users health points and gold values
+#prints three options for the player to choose and returns the choice
+def town_menu(hp, gold):
     '''
-    Prints name given in function call centered across given widths
+    Prints menu while play is in the town location
 
     Parameters: 
-        name: The name that should be displayed
-        width: The width you want the name centered in 
+        hp: the current health points of the player
+        gold: the current ammount of gold the player has
 
     Returns:
-        None
+        user input: the players choice of action
     '''
-    print(f"{name:^{width}}")
+    print("\nYou are in town.")
+    print(f"HP: {hp}, Gold: {gold}")
+    print("What would you like to do?\n")
+    print("1) Leave town (Fight Monster)")
+    print("2) Sleep (Restore HP for 100 Gold)")
+    print("3) Quit\n")
+    return input("enter number for choice: ")
+
+#function town_choice takes four perameters
+#if choice is 1, fight_monster definition is called
+#if choice is 2 and cost requirement is confirmed, gold is taken away,
+#and the users hp is reset to the maximum
+def town_choice(choice, hp, gold, max_hp):
+    '''
+    Continues choice 1 and choice 2 from the town menu
+
+    Parameters: 
+        choice: the decision made by the player
+        hp: the current health points of the player
+        gold: the current ammount of gold the player has
+        max_hp: the total hp the player could have
+
+    Returns:
+        hp: the current hp of the player(after sleep or fight)
+        gold: the current ammount of gold the player has(after sleep or fight)
+    '''
+    if choice == "1":
+        hp, gold = fight_monster(hp, gold)
+    elif choice == "2":
+        if gold >= 100:
+            gold -= 100
+            hp = max_hp
+            print("You sleep and restore your health.")
+        else:
+            print("Not enough gold to sleep.")
+            
+    return hp, gold
+
+#function get_user_fight_action takes two perameters
+#prints the HP of the monster and the player
+#prints users two fight action options
+#asks the user to pick a choice and returns the choice
+def get_user_fight_action(hp, monster_hp):
+    '''
+    Prints options menu for monster interaction
+
+    Parameters: 
+        hp: the current health points of the player
+        monster_hp: the current healh points of the monster
+
+    Returns:
+        user input: the players choice of action
+    '''
+    print(f"\nYour HP: {hp} | Monster HP: {monster_hp}")
+    print(f"1) Attack")
+    print(f"2) Run away")
+    return input("Choose fight action: ")
+
+#function fight_monster takes two perameters
+#calls new_random_monster, stores values related to the monster
+#stores random value for characters damage
+#while loop calls get_user_fight_action as long as user and monster health is greater than zero
+#characters and monsters health points are updated if they hit eachother
+#if monster health goes below zero, monster gold is added to player gold
+#if player health goes below zero and the monster is still alive, the player is defeated
+def fight_monster(character_health, character_gold):
+    '''
+    establishes monster fight sequence
+
+    Parameters: 
+        character_health: the current health points of the player
+        character_gold: the ammount of gold the player currently has
+
+    Returns:
+        character_health: updated character health points post altercation
+        character_gold: updated character gold ammount post altercation
+    '''
+    monster = new_random_monster()
     
-#function print_shop_menu takes 4 parameters
-# names and prices are formated in a menu
-def print_shop_menu(item1Name, item1Price, item2Name, item2Price):
-    '''
-    Formats called values for name and price into a menu
-
-    Parameters: 
-        item1Name: The name of the first item
-        item1Price: The price of the first item
-        item2Name: The name of the second item
-        item2Price: The price of the second item
-
-    Returns:
-        None
-    '''
-    price1 = f"${item1Price:.2f}"
-    price2 = f"${item2Price:.2f}"
-    print(f"/{"-"*22}\\")
-    print(f"| {item1Name:<12}{price1:>8} |")
-    print(f"| {item2Name:<12}{price2:>8} |")
-    print(f"\\{"-"*22}/")
-
-
-def test_functions():
-    num_purchased, leftover_money = purchase_item(123, 1000, 3)
-    print(num_purchased)
-    print(leftover_money)
-
-    num_purchased, leftover_money = purchase_item(123, 201, 3)
-    print(num_purchased)
-    print(leftover_money)
-
-    num_purchased, leftover_money = purchase_item(341, 2112)
-    print(num_purchased)
-    print(leftover_money)
-
-    my_monster = new_random_monster()
-    print(my_monster["name"])
-    print(my_monster["description"])
-    print(my_monster["health"])
-    print(my_monster["power"])
-    print(my_monster["money"])
-
-    print_welcome("kaden", 20)
-    print_welcome("jeff", 10)
-    print_welcome("big dawg", 15)
-
-    print_shop_menu("Apple", 31, "Pear", 1.234)
-    print_shop_menu("Egg", .23, "Bag of Oats", 12.34)
-    print_shop_menu("banana", .83, "milk", 3.89)
-
-if __name__ == "__main__":
-    test_functions()
+    monster_name = monster["name"]
+    monster_desc = monster["description"]
+    monster_health = monster["health"]
+    monster_power = monster["power"]
+    monster_money = monster["money"]
+    
+    character_damage = random.randint(45, 60)
+    
+    print(f"\nA {monster_name} appears")
+    print(f"Description: {monster_desc}")
+    print(f"Monster Stats - HP: {monster_health} | Power: {monster_power} | Bounty: {monster_money} Gold")
+    
+    while character_health > 0 and monster_health > 0:
+        user_action = get_user_fight_action(character_health, monster_health)
+        
+        if user_action == "1":
+            monster_health -= character_damage
+            character_health -= monster_power
+            print(f"You hit the {monster_name}. It hits you back for {monster_power} damage.")
+        elif user_action == "2":
+            print("You ran away safely")
+            break 
+        else:
+            print("Invalid, please choose 1 or 2.")
+            
+    if monster_health <= 0:
+        print(f"You defeated the {monster_name} and earned {monster_money} gold.")
+        character_gold += monster_money
+    elif character_health <= 0:
+        print("You have been defeated.")
+        
+    return character_health, character_gold

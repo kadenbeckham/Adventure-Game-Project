@@ -1,19 +1,17 @@
 import gamefunctions
 
-num_purchased, leftover_money = gamefunctions.purchase_item(123, 1000, 3)
-print(num_purchased)
-print(leftover_money)
+character_health = 65
+max_health = 75
+character_gold = 100
+playing = True
 
-my_monster = gamefunctions.new_random_monster()
-print(my_monster["name"])
-print(my_monster["description"])
-print(my_monster["health"])
-print(my_monster["power"])
-print(my_monster["money"])
-
-username = str(input("enter name: "))
-gamefunctions.print_welcome(username, 20)
-
-gamefunctions.print_shop_menu("Apple", 31, "Pear", 1.234)
-
-gamefunctions.test_functions()
+while playing == True:
+    choice = gamefunctions.town_menu(character_health, character_gold)
+        
+    if choice == "3":
+        print("Thanks for playing")
+        playing = False
+    elif choice == "1" or choice == "2":
+        character_health, character_gold = gamefunctions.town_choice(choice, character_health, character_gold, max_health)
+    else:
+        print("Invalid, please enter a valid option.")
